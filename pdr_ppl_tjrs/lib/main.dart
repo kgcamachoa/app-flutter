@@ -102,6 +102,99 @@ class StartPage extends StatelessWidget {
   }
 }
 
+class WinnerPage extends StatelessWidget {
+  const WinnerPage({
+    super.key,
+    required this.playerWon,
+    required this.playerScore,
+    required this.computerScore,
+  });
+
+  final bool playerWon;
+  final int playerScore;
+  final int computerScore;
+
+  String get _winnerImage {
+    return playerWon
+        ? 'assets/images/jugador_ganador.png'
+        : 'assets/images/compu_ganador.png';
+  }
+
+  void _returnHome(BuildContext context) {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const StartPage()),
+      (route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFAED0F4),
+      body: SafeArea(
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: SizedBox(
+              width: 1600,
+              height: 900,
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: 42,
+                    top: 108,
+                    bottom: 34,
+                    width: 610,
+                    child: Image.asset(
+                      _winnerImage,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                    ),
+                  ),
+                  Positioned(
+                    left: 640,
+                    right: 42,
+                    top: playerWon ? 46 : 64,
+                    child: Column(
+                      children: [
+                        _NeonText(
+                          playerWon
+                              ? '!FELICITACIONES!'
+                              : 'SUERTE PARA LA PROXIMA',
+                          fontSize: playerWon ? 58 : 50,
+                        ),
+                        const SizedBox(height: 78),
+                        _NeonText(
+                          playerWon ? '!GANASTE!' : 'LA\nCOMPUTADORA\nGANO',
+                          fontSize: playerWon ? 54 : 46,
+                        ),
+                        const SizedBox(height: 58),
+                        _NeonText(
+                          '$playerScore  -  $computerScore',
+                          fontSize: 50,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    right: 250,
+                    bottom: 58,
+                    child: _HomeActionFrame(
+                      key: const ValueKey('winner-home'),
+                      onTap: () => _returnHome(context),
+                      child: const _ReturnIcon(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
 
@@ -120,17 +213,40 @@ class _GamePageState extends State<GamePage> {
   void _play(Move playerMove) {
     final computerMove = Move.values[_random.nextInt(Move.values.length)];
     final result = _winner(playerMove, computerMove);
+    var nextPlayerScore = _playerScore;
+    var nextComputerScore = _computerScore;
+
+    if (result == RoundResult.player) {
+      nextPlayerScore++;
+    } else if (result == RoundResult.computer) {
+      nextComputerScore++;
+    }
 
     setState(() {
       _playerMove = playerMove;
       _computerMove = computerMove;
       _lastResult = result;
-      if (result == RoundResult.player) {
-        _playerScore++;
-      } else if (result == RoundResult.computer) {
-        _computerScore++;
-      }
+      _playerScore = nextPlayerScore;
+      _computerScore = nextComputerScore;
     });
+
+    if (nextPlayerScore >= 10 || nextComputerScore >= 10) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute<void>(
+            builder: (_) => WinnerPage(
+              playerWon: nextPlayerScore >= 10,
+              playerScore: nextPlayerScore,
+              computerScore: nextComputerScore,
+            ),
+          ),
+        );
+      });
+    }
   }
 
   RoundResult _winner(Move player, Move computer) {
@@ -596,6 +712,23 @@ class _ExitIcon extends StatelessWidget {
   }
 }
 
+class _ReturnIcon extends StatelessWidget {
+  const _ReturnIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 170,
+      height: 170,
+      decoration: const BoxDecoration(
+        color: Color(0xFFD92828),
+        shape: BoxShape.circle,
+      ),
+      child: CustomPaint(painter: _ReturnIconPainter()),
+    );
+  }
+}
+
 class _WebWindowFrame extends StatelessWidget {
   const _WebWindowFrame({
     required this.width,
@@ -939,6 +1072,40 @@ class _ExitIconPainter extends CustomPainter {
       Offset(size.width * 0.28, size.height * 0.72),
       paint,
     );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _ReturnIconPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = size.shortestSide * 0.09
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final path = Path()
+      ..moveTo(size.width * 0.66, size.height * 0.64)
+      ..cubicTo(
+        size.width * 0.88,
+        size.height * 0.64,
+        size.width * 0.88,
+        size.height * 0.34,
+        size.width * 0.62,
+        size.height * 0.34,
+      )
+      ..lineTo(size.width * 0.30, size.height * 0.34);
+    canvas.drawPath(path, paint);
+
+    final arrow = Path()
+      ..moveTo(size.width * 0.34, size.height * 0.20)
+      ..lineTo(size.width * 0.20, size.height * 0.34)
+      ..lineTo(size.width * 0.34, size.height * 0.48);
+    canvas.drawPath(arrow, paint);
   }
 
   @override
