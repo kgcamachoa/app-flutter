@@ -588,12 +588,12 @@ class _NeonText extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        layer(style(strokeColor: const Color(0xFFFF00C8), strokeWidth: 6)),
+        layer(style(strokeColor: const Color.fromARGB(255, 240, 101, 210), strokeWidth: 6)),
         layer(
-          style(strokeColor: const Color(0xFF00C9D8), strokeWidth: 6),
+          style(strokeColor: const Color.fromARGB(255, 133, 232, 239), strokeWidth: 6),
           offset: const Offset(3, 3),
         ),
-        layer(style(color: const Color(0xFFA6E9FF))),
+        layer(style(color: const Color.fromARGB(255, 167, 22, 22))),
       ],
     );
   }
