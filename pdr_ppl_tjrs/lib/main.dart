@@ -517,7 +517,10 @@ class _ScoreBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const _DownArrow(size: 60),
+        Transform.translate(
+          offset: const Offset(-34, 0),
+          child: const _DownArrow(size: 60),
+        ),
         const SizedBox(height: 4),
         _NeonText('$playerScore  -  $computerScore', fontSize: 42),
         const SizedBox(height: 8),
