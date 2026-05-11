@@ -548,51 +548,52 @@ class _NeonText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const letterSpacing = 5.0;
+    const textHeight = 0.78;
+
+    TextStyle style({
+      Color? color,
+      Color? strokeColor,
+      double strokeWidth = 0,
+    }) {
+      return TextStyle(
+        color: color,
+        fontFamily: 'Arial',
+        fontSize: fontSize,
+        height: textHeight,
+        letterSpacing: letterSpacing,
+        fontWeight: FontWeight.w900,
+        fontStyle: FontStyle.italic,
+        foreground: strokeColor == null
+            ? null
+            : (Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = strokeWidth
+                ..strokeJoin = StrokeJoin.round
+                ..color = strokeColor),
+      );
+    }
+
+    Widget layer(TextStyle textStyle, {Offset offset = Offset.zero}) {
+      return Transform.translate(
+        offset: offset,
+        child: Transform.scale(
+          scaleX: 1.14,
+          scaleY: 0.70,
+          child: Text(text, textAlign: TextAlign.center, style: textStyle),
+        ),
+      );
+    }
+
     return Stack(
       alignment: Alignment.center,
       children: [
-        Text(
-          text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: fontSize,
-            height: 0.95,
-            letterSpacing: 0,
-            fontWeight: FontWeight.w900,
-            foreground: Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 6
-              ..color = const Color(0xFFFF00C8),
-          ),
-        ),
-        Transform.translate(
+        layer(style(strokeColor: const Color(0xFFFF00C8), strokeWidth: 6)),
+        layer(
+          style(strokeColor: const Color(0xFF00C9D8), strokeWidth: 6),
           offset: const Offset(3, 3),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: fontSize,
-              height: 0.95,
-              letterSpacing: 0,
-              fontWeight: FontWeight.w900,
-              foreground: Paint()
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = 6
-                ..color = const Color(0xFF00C9D8),
-            ),
-          ),
         ),
-        Text(
-          text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: const Color(0xFF92D7FF),
-            fontSize: fontSize,
-            height: 0.95,
-            letterSpacing: 0,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
+        layer(style(color: const Color(0xFFA6E9FF))),
       ],
     );
   }
