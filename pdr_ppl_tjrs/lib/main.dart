@@ -250,7 +250,7 @@ class _SelectionStage extends StatelessWidget {
         child: FractionallySizedBox(
           widthFactor: large ? 0.82 : 0.72,
           heightFactor: large ? 0.82 : 0.72,
-          child: CustomPaint(painter: _MovePainter(move)),
+          child: _MoveImage(move: move),
         ),
       ),
     );
@@ -374,7 +374,10 @@ class _ButtonMovePreview extends StatelessWidget {
                   color: const Color(0xFFF8FBFF),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: CustomPaint(painter: _MovePainter(move)),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: _MoveImage(move: move),
+                ),
               ),
             ),
             Positioned(
@@ -400,6 +403,29 @@ class _ButtonMovePreview extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _MoveImage extends StatelessWidget {
+  const _MoveImage({required this.move});
+
+  final Move move;
+
+  String get assetPath {
+    return switch (move) {
+      Move.rock => 'assets/images/piedra.png',
+      Move.paper => 'assets/images/papel.png',
+      Move.scissors => 'assets/images/tijera.png',
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      assetPath,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
     );
   }
 }
@@ -622,270 +648,6 @@ class _WatercolorBackgroundPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _MovePainter extends CustomPainter {
-  const _MovePainter(this.move);
-
-  final Move move;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (size.isEmpty) {
-      return;
-    }
-
-    final side = min(size.width, size.height);
-    canvas.save();
-    canvas.translate((size.width - side) / 2, (size.height - side) / 2);
-    final squareSize = Size.square(side);
-
-    switch (move) {
-      case Move.rock:
-        _paintRock(canvas, squareSize);
-      case Move.paper:
-        _paintPaper(canvas, squareSize);
-      case Move.scissors:
-        _paintScissors(canvas, squareSize);
-    }
-    canvas.restore();
-  }
-
-  void _paintRock(Canvas canvas, Size size) {
-    final path = Path()
-      ..moveTo(size.width * 0.12, size.height * 0.58)
-      ..cubicTo(
-        size.width * 0.15,
-        size.height * 0.28,
-        size.width * 0.36,
-        size.height * 0.12,
-        size.width * 0.58,
-        size.height * 0.16,
-      )
-      ..cubicTo(
-        size.width * 0.76,
-        size.height * 0.18,
-        size.width * 0.92,
-        size.height * 0.42,
-        size.width * 0.86,
-        size.height * 0.67,
-      )
-      ..cubicTo(
-        size.width * 0.80,
-        size.height * 0.88,
-        size.width * 0.35,
-        size.height * 0.90,
-        size.width * 0.17,
-        size.height * 0.72,
-      )
-      ..close();
-
-    canvas.drawPath(path, Paint()..color = const Color(0xFFBBA980));
-    canvas.drawPath(
-      path,
-      Paint()
-        ..shader = const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFEBD9AE), Color(0xFF6E6959)],
-        ).createShader(Offset.zero & size),
-    );
-
-    final stroke = Paint()
-      ..color = const Color(0x8A4C4638)
-      ..strokeWidth = size.shortestSide * 0.028
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final lines = [
-      [
-        const Offset(0.22, 0.56),
-        const Offset(0.46, 0.28),
-        const Offset(0.70, 0.34),
-      ],
-      [
-        const Offset(0.30, 0.75),
-        const Offset(0.55, 0.47),
-        const Offset(0.82, 0.55),
-      ],
-      [
-        const Offset(0.44, 0.20),
-        const Offset(0.38, 0.58),
-        const Offset(0.55, 0.86),
-      ],
-      [
-        const Offset(0.62, 0.23),
-        const Offset(0.70, 0.50),
-        const Offset(0.65, 0.78),
-      ],
-    ];
-
-    for (final line in lines) {
-      final linePath = Path()
-        ..moveTo(size.width * line[0].dx, size.height * line[0].dy)
-        ..quadraticBezierTo(
-          size.width * line[1].dx,
-          size.height * line[1].dy,
-          size.width * line[2].dx,
-          size.height * line[2].dy,
-        );
-      canvas.drawPath(linePath, stroke);
-    }
-  }
-
-  void _paintPaper(Canvas canvas, Size size) {
-    final paper = Path()
-      ..moveTo(size.width * 0.20, size.height * 0.06)
-      ..lineTo(size.width * 0.86, size.height * 0.08)
-      ..lineTo(size.width * 0.88, size.height * 0.72)
-      ..quadraticBezierTo(
-        size.width * 0.78,
-        size.height * 0.90,
-        size.width * 0.48,
-        size.height * 0.87,
-      )
-      ..lineTo(size.width * 0.22, size.height * 0.84)
-      ..quadraticBezierTo(
-        size.width * 0.16,
-        size.height * 0.48,
-        size.width * 0.20,
-        size.height * 0.06,
-      )
-      ..close();
-
-    canvas.drawPath(paper, Paint()..color = const Color(0xF5FFFFFF));
-
-    final grid = Paint()
-      ..color = const Color(0x8895BECC)
-      ..strokeWidth = max(1.0, size.shortestSide * 0.008);
-
-    for (double x = 0.28; x < 0.82; x += 0.09) {
-      canvas.drawLine(
-        Offset(size.width * x, size.height * 0.12),
-        Offset(size.width * (x - 0.02), size.height * 0.82),
-        grid,
-      );
-    }
-    for (double y = 0.18; y < 0.78; y += 0.09) {
-      canvas.drawLine(
-        Offset(size.width * 0.22, size.height * y),
-        Offset(size.width * 0.83, size.height * (y + 0.02)),
-        grid,
-      );
-    }
-
-    final holePaint = Paint()..color = const Color(0x88B7BAB9);
-    for (double y = 0.18; y < 0.62; y += 0.12) {
-      canvas.drawCircle(
-        Offset(size.width * 0.23, size.height * y),
-        size.shortestSide * 0.035,
-        holePaint,
-      );
-      canvas.drawArc(
-        Rect.fromCircle(
-          center: Offset(size.width * 0.20, size.height * y),
-          radius: size.shortestSide * 0.055,
-        ),
-        -pi / 2,
-        pi,
-        false,
-        Paint()
-          ..color = const Color(0x887C8384)
-          ..strokeWidth = size.shortestSide * 0.015
-          ..style = PaintingStyle.stroke,
-      );
-    }
-
-    canvas.drawPath(
-      paper,
-      Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = size.shortestSide * 0.045,
-    );
-  }
-
-  void _paintScissors(Canvas canvas, Size size) {
-    final bladePaint = Paint()..color = const Color(0xFFB8BDCB);
-    final darkBlade = Paint()..color = const Color(0xFF9EA4B3);
-    final handle = Paint()
-      ..color = const Color(0xFF252631)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = size.shortestSide * 0.09
-      ..strokeCap = StrokeCap.round;
-
-    final bladeOne = Path()
-      ..moveTo(size.width * 0.50, size.height * 0.50)
-      ..lineTo(size.width * 0.86, size.height * 0.08)
-      ..quadraticBezierTo(
-        size.width * 0.72,
-        size.height * 0.44,
-        size.width * 0.50,
-        size.height * 0.55,
-      )
-      ..close();
-    final bladeTwo = Path()
-      ..moveTo(size.width * 0.50, size.height * 0.54)
-      ..lineTo(size.width * 0.94, size.height * 0.38)
-      ..quadraticBezierTo(
-        size.width * 0.72,
-        size.height * 0.64,
-        size.width * 0.50,
-        size.height * 0.58,
-      )
-      ..close();
-
-    canvas.drawPath(bladeOne, bladePaint);
-    canvas.drawPath(bladeTwo, darkBlade);
-    canvas.drawCircle(
-      Offset(size.width * 0.50, size.height * 0.55),
-      size.shortestSide * 0.055,
-      Paint()..color = const Color(0xFFAEB2BD),
-    );
-    canvas.drawCircle(
-      Offset(size.width * 0.50, size.height * 0.55),
-      size.shortestSide * 0.020,
-      Paint()..color = const Color(0xFF858994),
-    );
-
-    final upperHandle = Path()
-      ..moveTo(size.width * 0.48, size.height * 0.55)
-      ..quadraticBezierTo(
-        size.width * 0.34,
-        size.height * 0.52,
-        size.width * 0.28,
-        size.height * 0.45,
-      )
-      ..addOval(
-        Rect.fromCenter(
-          center: Offset(size.width * 0.22, size.height * 0.44),
-          width: size.width * 0.24,
-          height: size.height * 0.16,
-        ),
-      );
-    final lowerHandle = Path()
-      ..moveTo(size.width * 0.48, size.height * 0.60)
-      ..quadraticBezierTo(
-        size.width * 0.36,
-        size.height * 0.70,
-        size.width * 0.32,
-        size.height * 0.78,
-      )
-      ..addOval(
-        Rect.fromCenter(
-          center: Offset(size.width * 0.34, size.height * 0.82),
-          width: size.width * 0.22,
-          height: size.height * 0.17,
-        ),
-      );
-
-    canvas.drawPath(upperHandle, handle);
-    canvas.drawPath(lowerHandle, handle);
-  }
-
-  @override
-  bool shouldRepaint(covariant _MovePainter oldDelegate) =>
-      oldDelegate.move != move;
 }
 
 class _DottedDividerPainter extends CustomPainter {
