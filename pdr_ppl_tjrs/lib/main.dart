@@ -144,7 +144,7 @@ class WinnerPage extends StatelessWidget {
                     left: 42,
                     top: 108,
                     bottom: 34,
-                    width: 610,
+                    width: 1000,
                     child: Image.asset(
                       _winnerImage,
                       fit: BoxFit.contain,
