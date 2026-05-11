@@ -9,6 +9,13 @@ void main() {
 
     await tester.pumpWidget(const RockPaperScissorsApp());
 
+    expect(find.text('PIEDRA, PAPEL O TIJERA'), findsWidgets);
+    expect(find.byKey(const ValueKey('start-play')), findsOneWidget);
+    expect(find.byKey(const ValueKey('start-exit')), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('start-play')));
+    await tester.pumpAndSettle();
+
     expect(find.text('JUGADOR'), findsWidgets);
     expect(find.text('EMPATE'), findsWidgets);
     expect(find.text('0  -  0'), findsWidgets);

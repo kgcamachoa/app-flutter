@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const RockPaperScissorsApp());
@@ -19,7 +20,7 @@ class RockPaperScissorsApp extends StatelessWidget {
         fontFamily: 'Arial',
         useMaterial3: true,
       ),
-      home: const GamePage(),
+      home: const StartPage(),
     );
   }
 }
@@ -35,6 +36,71 @@ enum Move {
 }
 
 enum RoundResult { player, computer, tie }
+
+class StartPage extends StatelessWidget {
+  const StartPage({super.key});
+
+  void _openGame(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const GamePage()));
+  }
+
+  void _closeApp() {
+    SystemNavigator.pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFAED0F4),
+      body: SafeArea(
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: Container(
+              width: 1600,
+              height: 900,
+              padding: const EdgeInsets.fromLTRB(58, 48, 58, 28),
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFF8E4DFF), width: 5),
+              ),
+              child: Column(
+                children: [
+                  const _NeonText('PIEDRA, PAPEL O TIJERA', fontSize: 58),
+                  const SizedBox(height: 78),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: Move.values.map((move) {
+                      return _HomeMoveFrame(move: move);
+                    }).toList(),
+                  ),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _HomeActionFrame(
+                        key: const ValueKey('start-play'),
+                        onTap: () => _openGame(context),
+                        child: const _PlayLabel(),
+                      ),
+                      const SizedBox(width: 210),
+                      _HomeActionFrame(
+                        key: const ValueKey('start-exit'),
+                        onTap: _closeApp,
+                        child: const _ExitIcon(),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -426,6 +492,165 @@ class _MoveImage extends StatelessWidget {
   }
 }
 
+class _HomeMoveFrame extends StatelessWidget {
+  const _HomeMoveFrame({required this.move});
+
+  final Move move;
+
+  @override
+  Widget build(BuildContext context) {
+    return _WebWindowFrame(
+      width: 420,
+      height: 300,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(28, 18, 18, 18),
+        child: Row(
+          children: [
+            Expanded(child: _MoveImage(move: move)),
+            const SizedBox(width: 14),
+            const _FakeScrollBar(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HomeActionFrame extends StatefulWidget {
+  const _HomeActionFrame({super.key, required this.onTap, required this.child});
+
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  State<_HomeActionFrame> createState() => _HomeActionFrameState();
+}
+
+class _HomeActionFrameState extends State<_HomeActionFrame> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: AnimatedScale(
+        scale: _hovered ? 1.04 : 1,
+        duration: const Duration(milliseconds: 140),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: _WebWindowFrame(
+            width: 300,
+            height: 210,
+            active: _hovered,
+            child: Center(child: widget.child),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PlayLabel extends StatelessWidget {
+  const _PlayLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 230,
+      height: 88,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFF5757),
+        border: Border.all(color: const Color(0xFF181235), width: 7),
+        borderRadius: BorderRadius.circular(46),
+      ),
+      child: const Text(
+        'PLAY',
+        style: TextStyle(
+          color: Color(0xFF181235),
+          fontSize: 38,
+          letterSpacing: 9,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
+class _ExitIcon extends StatelessWidget {
+  const _ExitIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 160,
+      height: 160,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFF6B62),
+        border: Border.all(color: const Color(0xFF181235), width: 6),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: CustomPaint(painter: _ExitIconPainter()),
+    );
+  }
+}
+
+class _WebWindowFrame extends StatelessWidget {
+  const _WebWindowFrame({
+    required this.width,
+    required this.height,
+    required this.child,
+    this.active = false,
+  });
+
+  final double width;
+  final double height;
+  final Widget child;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: -18,
+            top: 20,
+            right: 18,
+            bottom: -18,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: const Color(0xFF1D60C6),
+                border: Border.all(color: Colors.black, width: 3),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5FE),
+                border: Border.all(color: Colors.black, width: 3),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  _WindowBar(active: active),
+                  Expanded(child: child),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _WindowBar extends StatelessWidget {
   const _WindowBar({required this.active});
 
@@ -689,6 +914,31 @@ class _ArrowPainter extends CustomPainter {
 
     canvas.drawRRect(shaft, paint);
     canvas.drawPath(head, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _ExitIconPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF5E2B2B)
+      ..strokeWidth = size.shortestSide * 0.14
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawLine(
+      Offset(size.width * 0.28, size.height * 0.28),
+      Offset(size.width * 0.72, size.height * 0.72),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width * 0.72, size.height * 0.28),
+      Offset(size.width * 0.28, size.height * 0.72),
+      paint,
+    );
   }
 
   @override
