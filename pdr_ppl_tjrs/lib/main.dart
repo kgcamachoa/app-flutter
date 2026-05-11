@@ -95,33 +95,23 @@ class _GamePageState extends State<GamePage> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final isCompact = constraints.maxWidth < 820;
-
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isCompact ? 16 : 34,
-                    vertical: isCompact ? 20 : 26,
+            return Center(
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: SizedBox(
+                  width: 1600,
+                  height: 900,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(34, 22, 34, 18),
+                    child: _WideGameView(
+                      playerMove: _playerMove,
+                      computerMove: _computerMove,
+                      playerScore: _playerScore,
+                      computerScore: _computerScore,
+                      statusText: _statusText,
+                      onPlay: _play,
+                    ),
                   ),
-                  child: isCompact
-                      ? _CompactGameView(
-                          playerMove: _playerMove,
-                          computerMove: _computerMove,
-                          playerScore: _playerScore,
-                          computerScore: _computerScore,
-                          statusText: _statusText,
-                          onPlay: _play,
-                        )
-                      : _WideGameView(
-                          playerMove: _playerMove,
-                          computerMove: _computerMove,
-                          playerScore: _playerScore,
-                          computerScore: _computerScore,
-                          statusText: _statusText,
-                          onPlay: _play,
-                        ),
                 ),
               ),
             );
@@ -151,61 +141,22 @@ class _WideGameView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: _PlayerSide(selectedMove: playerMove, onPlay: onPlay),
-          ),
-          const SizedBox(width: 22),
-          const SizedBox(width: 22, child: _DottedDivider()),
-          const SizedBox(width: 22),
-          Expanded(
-            child: _ComputerSide(
-              selectedMove: computerMove,
-              playerScore: playerScore,
-              computerScore: computerScore,
-              statusText: statusText,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CompactGameView extends StatelessWidget {
-  const _CompactGameView({
-    required this.playerMove,
-    required this.computerMove,
-    required this.playerScore,
-    required this.computerScore,
-    required this.statusText,
-    required this.onPlay,
-  });
-
-  final Move playerMove;
-  final Move computerMove;
-  final int playerScore;
-  final int computerScore;
-  final String statusText;
-  final ValueChanged<Move> onPlay;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _PlayerSide(selectedMove: playerMove, onPlay: onPlay),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 20),
-          child: SizedBox(height: 22, child: _HorizontalDottedDivider()),
+        Expanded(
+          child: _PlayerSide(selectedMove: playerMove, onPlay: onPlay),
         ),
-        _ComputerSide(
-          selectedMove: computerMove,
-          playerScore: playerScore,
-          computerScore: computerScore,
-          statusText: statusText,
+        const SizedBox(width: 22),
+        const SizedBox(width: 22, child: _DottedDivider()),
+        const SizedBox(width: 22),
+        Expanded(
+          child: _ComputerSide(
+            selectedMove: computerMove,
+            playerScore: playerScore,
+            computerScore: computerScore,
+            statusText: statusText,
+          ),
         ),
       ],
     );
@@ -225,18 +176,16 @@ class _PlayerSide extends StatelessWidget {
         const _DownArrow(size: 78),
         const _NeonText('JUGADOR', fontSize: 48),
         const SizedBox(height: 28),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
-          child: AspectRatio(
-            aspectRatio: 1.06,
-            child: _SelectionStage(move: selectedMove, large: true),
-          ),
+        SizedBox(
+          width: 520,
+          height: 450,
+          child: _SelectionStage(move: selectedMove, large: true),
         ),
-        const SizedBox(height: 26),
+        const SizedBox(height: 18),
         Wrap(
           alignment: WrapAlignment.center,
-          spacing: 24,
-          runSpacing: 18,
+          spacing: 18,
+          runSpacing: 12,
           children: Move.values.map((move) {
             return _MoveButton(
               key: ValueKey('button-${move.name}'),
@@ -270,15 +219,13 @@ class _ComputerSide extends StatelessWidget {
       children: [
         const SizedBox(height: 28),
         const _NeonText('PIEDRA, PAPEL\nO TIJERA', fontSize: 46),
-        const SizedBox(height: 34),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
-          child: AspectRatio(
-            aspectRatio: 1.06,
-            child: _SelectionStage(move: selectedMove, large: true),
-          ),
-        ),
         const SizedBox(height: 28),
+        SizedBox(
+          width: 550,
+          height: 500,
+          child: _SelectionStage(move: selectedMove, large: true),
+        ),
+        const SizedBox(height: 18),
         _ScoreBoard(
           playerScore: playerScore,
           computerScore: computerScore,
@@ -343,8 +290,8 @@ class _MoveButtonState extends State<_MoveButton> {
           child: GestureDetector(
             onTap: widget.onPressed,
             child: SizedBox(
-              width: 194,
-              height: 146,
+              width: 220,
+              height: 154,
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -375,15 +322,16 @@ class _MoveButtonState extends State<_MoveButton> {
                           _WindowBar(active: widget.selected),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.fromLTRB(14, 9, 8, 7),
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: CustomPaint(
-                                      painter: _MovePainter(widget.move),
+                                    child: _ButtonMovePreview(
+                                      move: widget.move,
+                                      selected: widget.selected,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 4),
                                   const _FakeScrollBar(),
                                 ],
                               ),
@@ -399,6 +347,59 @@ class _MoveButtonState extends State<_MoveButton> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ButtonMovePreview extends StatelessWidget {
+  const _ButtonMovePreview({required this.move, required this.selected});
+
+  final Move move;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final labelHeight = 22.0;
+        return Stack(
+          children: [
+            Positioned(
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: labelHeight,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FBFF),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: CustomPaint(painter: _MovePainter(move)),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: labelHeight,
+              child: Center(
+                child: Text(
+                  move.label.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: selected
+                        ? const Color(0xFF0D52BC)
+                        : const Color(0xFF182033),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -424,9 +425,9 @@ class _WindowBar extends StatelessWidget {
         children: const [
           _WindowIcon(symbol: '-'),
           SizedBox(width: 4),
-          _WindowIcon(symbol: '□'),
+          _WindowIcon(symbol: 'o'),
           SizedBox(width: 4),
-          _WindowIcon(symbol: '×'),
+          _WindowIcon(symbol: 'x'),
           SizedBox(width: 8),
         ],
       ),
@@ -592,15 +593,6 @@ class _DottedDivider extends StatelessWidget {
   }
 }
 
-class _HorizontalDottedDivider extends StatelessWidget {
-  const _HorizontalDottedDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(painter: _DottedDividerPainter(vertical: false));
-  }
-}
-
 class _WatercolorBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -639,14 +631,24 @@ class _MovePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (size.isEmpty) {
+      return;
+    }
+
+    final side = min(size.width, size.height);
+    canvas.save();
+    canvas.translate((size.width - side) / 2, (size.height - side) / 2);
+    final squareSize = Size.square(side);
+
     switch (move) {
       case Move.rock:
-        _paintRock(canvas, size);
+        _paintRock(canvas, squareSize);
       case Move.paper:
-        _paintPaper(canvas, size);
+        _paintPaper(canvas, squareSize);
       case Move.scissors:
-        _paintScissors(canvas, size);
+        _paintScissors(canvas, squareSize);
     }
+    canvas.restore();
   }
 
   void _paintRock(Canvas canvas, Size size) {
