@@ -10,7 +10,7 @@ void main() {
     await tester.pumpWidget(const RockPaperScissorsApp());
 
     expect(find.text('JUGADOR'), findsWidgets);
-    expect(find.text('PIEDRA, PAPEL\nO TIJERA'), findsWidgets);
+    expect(find.text('EMPATE'), findsWidgets);
     expect(find.text('0  -  0'), findsWidgets);
     expect(find.byKey(const ValueKey('button-rock')), findsOneWidget);
     expect(find.byKey(const ValueKey('button-paper')), findsOneWidget);
@@ -19,7 +19,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('button-rock')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const ValueKey('round-status')), findsOneWidget);
+    expect(find.textContaining('PIEDRA, PAPEL'), findsNothing);
     expect(find.textContaining('MARCADOR'), findsWidgets);
   });
 }

@@ -82,9 +82,9 @@ class _GamePageState extends State<GamePage> {
 
   String get _statusText {
     return switch (_lastResult) {
-      RoundResult.player => 'Ganaste la ronda',
-      RoundResult.computer => 'Gana la computadora',
-      RoundResult.tie => 'Empate',
+      RoundResult.player => 'GANASTE LA RONDA',
+      RoundResult.computer => 'GANA LA COMPUTADORA',
+      RoundResult.tie => 'EMPATE',
     };
   }
 
@@ -218,7 +218,7 @@ class _ComputerSide extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 28),
-        const _NeonText('PIEDRA, PAPEL\nO TIJERA', fontSize: 46),
+        _NeonText(statusText, fontSize: 40),
         const SizedBox(height: 28),
         SizedBox(
           width: 550,
@@ -226,11 +226,7 @@ class _ComputerSide extends StatelessWidget {
           child: _SelectionStage(move: selectedMove, large: true),
         ),
         const SizedBox(height: 18),
-        _ScoreBoard(
-          playerScore: playerScore,
-          computerScore: computerScore,
-          statusText: statusText,
-        ),
+        _ScoreBoard(playerScore: playerScore, computerScore: computerScore),
       ],
     );
   }
@@ -503,15 +499,10 @@ class _FakeScrollBar extends StatelessWidget {
 }
 
 class _ScoreBoard extends StatelessWidget {
-  const _ScoreBoard({
-    required this.playerScore,
-    required this.computerScore,
-    required this.statusText,
-  });
+  const _ScoreBoard({required this.playerScore, required this.computerScore});
 
   final int playerScore;
   final int computerScore;
-  final String statusText;
 
   @override
   Widget build(BuildContext context) {
@@ -525,16 +516,6 @@ class _ScoreBoard extends StatelessWidget {
         _NeonText('$playerScore  -  $computerScore', fontSize: 42),
         const SizedBox(height: 8),
         const _NeonText('MARCADOR', fontSize: 42),
-        const SizedBox(height: 10),
-        Text(
-          statusText,
-          key: const ValueKey('round-status'),
-          style: const TextStyle(
-            color: Color(0xFF13649C),
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
       ],
     );
   }
