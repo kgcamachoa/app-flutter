@@ -518,7 +518,7 @@ class _ScoreBoard extends StatelessWidget {
     return Column(
       children: [
         Transform.translate(
-          offset: const Offset(-34, 0),
+          offset: const Offset(-48, 0),
           child: const _DownArrow(size: 60),
         ),
         const SizedBox(height: 4),
@@ -588,9 +588,17 @@ class _NeonText extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        layer(style(strokeColor: const Color.fromARGB(255, 240, 101, 210), strokeWidth: 6)),
         layer(
-          style(strokeColor: const Color.fromARGB(255, 133, 232, 239), strokeWidth: 6),
+          style(
+            strokeColor: const Color.fromARGB(255, 240, 101, 210),
+            strokeWidth: 6,
+          ),
+        ),
+        layer(
+          style(
+            strokeColor: const Color.fromARGB(255, 133, 232, 239),
+            strokeWidth: 6,
+          ),
           offset: const Offset(3, 3),
         ),
         layer(style(color: const Color.fromARGB(255, 167, 22, 22))),
@@ -682,7 +690,7 @@ class _DottedDividerPainter extends CustomPainter {
 class _ArrowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = const Color(0xFFD92828);
+    final paint = Paint()..color = const Color.fromARGB(255, 167, 22, 22);
     final shaft = RRect.fromRectAndRadius(
       Rect.fromLTWH(
         size.width * 0.41,
