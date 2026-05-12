@@ -1,17 +1,40 @@
 # pdr_ppl_tjrs
 
-A new Flutter project.
+# Piedra Papel o Tijeras (Flutter)
 
-## Getting Started
+Aplicación para jugar piedra, papel o tijera desarrollada con Flutter, donde el jugador compite contra la computadora.
+El objetivo de la creación de esta aplicación fue practicar y mejorar el desarrollo de Flutter UI.
 
-This project is a starting point for a Flutter application.
+## Características
+- Jugar "Piedra, Papel o Tijera" contra la computadora
+- Jugadas de la computadora aleatorias
+- Resultados inmediatos (Ganar/Perder/Empate)
+- Seguimiento de puntaje
+- Compatible con **Desktop** y **Web**
 
-A few resources to get you started if this is your first Flutter project:
+## Tecnologías usadas
+- **Flutter (Dart)**
+- **Visual Studio Code**
+- **Github**
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Plataformas compatibles
+Esta aplicación puede corre en:
+### Desktop
+- Windows
+- macOS
+### Web
+- Google Chrome
+- Microsoft Edge
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Requerimientos
+- **Flutter SDK**
+- **Visual Studio Code**
+- Plataforma/dispositivo compatible
+
+## Instalación
+1. Clonar el repositorio:
+
+git clone https://github.com/kgcamachoa/app-flutter.git
+
+## Video demostrativo
+https://drive.google.com/drive/folders/1uqOI3cW7jwj6d1BZSV_7rNfFHCuoQztZ?usp=drive_link
